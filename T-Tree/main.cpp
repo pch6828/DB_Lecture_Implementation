@@ -1,11 +1,25 @@
 #include "T_Tree.h"
+#include <iostream>
+
+using namespace std;
 
 int main() {
-	Key_Value<int, int> temp1(1, 1);
-	Key_Value<int, int> temp2(2, 2);
-	swap(temp1, temp2);
+	T_Tree_Node<int, int>tree;
 
-	cout << temp1.get_value() << "\n";
+	while (true) {
+		string cmd;
+		cin >> cmd;
+		if (cmd == "insert") {
+			int key, val;
+			cin >> key >> val;
+			tree.insert(key, val);
+		}
+		else if (cmd == "print") {
+			tree.print_inorder();
+			cout << "\n";
+		}
+
+	}
 
 	return 0;
 }

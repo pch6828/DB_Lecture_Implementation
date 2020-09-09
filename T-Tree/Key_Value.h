@@ -17,7 +17,6 @@ public:
 	Key_Value(key_t key, value_t value):valid(true), key(key) {
 		this->value = new value_t(value);
 	}
-	Key_Value(key_t key, value_t* value) :valid(true), key(key), value(value) {}
 	Key_Value() : valid(false), key(NONE_KEY), value(NULL) {}
 	~Key_Value() {
 		if (value) {
@@ -30,14 +29,20 @@ public:
 	void set_value(value_t value);
 	key_t get_key();
 	value_t get_value();
-	value_t* get_pointer();
 	bool is_valid();
 };
 
 template<class key_t, class value_t>
 Key_Value<key_t, value_t>& Key_Value<key_t, value_t>::operator=(const Key_Value<key_t, value_t>& other) {
-	this->key = other.key;
-	this->value = new value_t(*other.value);
+	if (other.valid) {
+		this->key = other.key;
+		this->value = new value_t(*other.value);
+	}
+	else {
+		this->key = NONE_KEY;
+		this->value = NONE_VALUE;
+	}
+	this->valid = other.valid;
 	return *this;
 }
 
@@ -59,11 +64,6 @@ key_t Key_Value<key_t, value_t>::get_key() {
 template<class key_t, class value_t>
 value_t Key_Value<key_t, value_t>::get_value() {
 	return *this->value;
-}
-
-template<class key_t, class value_t>
-value_t* Key_Value<key_t, value_t>::get_pointer() {
-	return this->value;
 }
 
 template<class key_t, class value_t>
