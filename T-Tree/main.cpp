@@ -4,7 +4,7 @@
 using namespace std;
 
 int main() {
-	T_Tree_Node<int, int>tree;
+	T_Tree_Node<int, int>* tree = new T_Tree_Node<int, int>();
 
 	while (true) {
 		string cmd;
@@ -12,10 +12,10 @@ int main() {
 		if (cmd == "insert") {
 			int key, val;
 			cin >> key >> val;
-			tree.insert(key, val);
+			tree = tree->insert(key, val);
 		}
 		else if (cmd == "print") {
-			tree.print_inorder();
+			tree->print_inorder();
 			cout << "\n";
 		}
 
