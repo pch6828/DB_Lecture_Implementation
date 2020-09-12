@@ -29,6 +29,7 @@ public:
 	void set_value(value_t value);
 	key_t get_key();
 	value_t get_value();
+	value_t* get_pointer();
 	bool is_valid();
 };
 
@@ -64,6 +65,11 @@ key_t Key_Value<key_t, value_t>::get_key() {
 template<class key_t, class value_t>
 value_t Key_Value<key_t, value_t>::get_value() {
 	return *this->value;
+}
+
+template<class key_t, class value_t>
+value_t* Key_Value<key_t, value_t>::get_pointer() {
+	return this->value;
 }
 
 template<class key_t, class value_t>
