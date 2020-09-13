@@ -296,10 +296,20 @@ T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::erase(key_t key) {
 	}
 
 	if (lh - rh == 2) {
-		result = this->single_left_rotation();
+		if (result->left_child->right_child) {
+			result = result->double_left_rotation();
+		}
+		else {
+			result = result->single_left_rotation();
+		}
 	}
 	else if (rh - lh == 2) {
-		result = this->single_right_rotation();
+		if (result->right_child->left_child) {
+			result = result->double_right_rotation();
+		}
+		else {
+			result = result->single_right_rotation();
+		}
 	}
 	return result;
 }
