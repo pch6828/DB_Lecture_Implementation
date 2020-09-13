@@ -140,7 +140,7 @@ T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::insert(key_t key, valu
 	if (result->left_child) {
 		lh = result->left_child->height;
 	}
-	if (right_child) {
+	if (result->right_child) {
 		rh = result->right_child->height;
 	}
 	result->height = std::max(lh, rh) + 1;
@@ -244,6 +244,7 @@ T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::erase_at_node(key_t ke
 template<class key_t, class value_t>
 T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::erase(key_t key) {
 	int lh = -1, rh = -1;
+	T_Tree_Node<key_t, value_t>* result = this;
 	if (min_key <= key && key <= max_key) {
 		erase_at_node(key);
 		if (this->left_child) {
@@ -286,7 +287,21 @@ T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::erase(key_t key) {
 		delete right_child;
 		right_child = NULL;
 	}
-	return this;
+
+	if (result->left_child) {
+		lh = result->left_child->height;
+	}
+	if (result->right_child) {
+		rh = result->right_child->height;
+	}
+
+	if (lh - rh == 2) {
+		result = this->single_left_rotation();
+	}
+	else if (rh - lh == 2) {
+		result = this->single_right_rotation();
+	}
+	return result;
 }
 
 
