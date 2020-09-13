@@ -13,6 +13,7 @@ public:
 	}
 
 	void insert(key_t key, value_t value);
+	void erase(key_t key);
 	value_t* find(key_t key);
 
 	void print_inorder();
@@ -24,6 +25,11 @@ void T_Tree<key_t, value_t>::insert(key_t key, value_t value) {
 	if (!root->find(key, dist)) {
 		root = root->insert(key, value);
 	}
+}
+
+template<class key_t, class value_t>
+void T_Tree<key_t, value_t>::erase(key_t key) {
+		root = root->erase(key);
 }
 
 template<class key_t, class value_t>

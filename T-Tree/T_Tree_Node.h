@@ -12,6 +12,7 @@ private:
 	int size, height;
 
 	T_Tree_Node<key_t, value_t>* insert_at_node(key_t key, value_t value);
+	T_Tree_Node<key_t, value_t>* erase_at_node(key_t key);
 	T_Tree_Node<key_t, value_t>* single_left_rotation();
 	T_Tree_Node<key_t, value_t>* single_right_rotation();
 	T_Tree_Node<key_t, value_t>* double_left_rotation();
@@ -28,6 +29,7 @@ public:
 
 	bool find(key_t key, value_t*& dist);
 	T_Tree_Node<key_t, value_t>* insert(key_t key, value_t value);
+	T_Tree_Node<key_t, value_t>* erase(key_t key);
 	void print_inorder();
 };
 
@@ -57,7 +59,7 @@ bool T_Tree_Node<key_t, value_t>::find(key_t key, value_t*& dist) {
 template<class key_t, class value_t>
 T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::insert_at_node(key_t key, value_t value) {
 	records[size++] = Key_Value<key_t, value_t>(key, value);
-	for (int i = size - 1; i > 0; i++) {
+	for (int i = size - 1; i > 0; i--) {
 		if (records[i].get_key() > records[i - 1].get_key()) {
 			break;
 		}
@@ -144,6 +146,7 @@ T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::insert(key_t key, valu
 	result->height = std::max(lh, rh) + 1;
 	return result;
 }
+
 template<class key_t, class value_t>
 T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::single_left_rotation() {
 	T_Tree_Node<key_t, value_t>* k1, *k2;
@@ -175,6 +178,7 @@ T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::single_left_rotation()
 	k1->height = max(lh, rh) + 1;
 	return k1;
 }
+
 template<class key_t, class value_t>
 T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::single_right_rotation() {
 	T_Tree_Node<key_t, value_t>* k1, *k2;
@@ -218,17 +222,88 @@ T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::double_right_rotation(
 	this->right_child = this->right_child->single_left_rotation();
 	return this->single_right_rotation();
 }
+template<class key_t, class value_t>
+T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::erase_at_node(key_t key) {
+	for (int i = 0; i < size; i++) {
+		if (records[i].get_key() == key) {
+			records[i] = Key_Value<key_t, value_t>();
+			break;
+		}
+	}
+	size--;
+	for (int i = 0; i < size; i++) {
+		if (!records[i].is_valid()) {
+			swap(records[i], records[i + 1]);
+		}
+	}
+	min_key = records[0].get_key();
+	max_key = records[size - 1].get_key();
+	return this;
+}
+
+template<class key_t, class value_t>
+T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::erase(key_t key) {
+	int lh = -1, rh = -1;
+	if (min_key <= key && key <= max_key) {
+		erase_at_node(key);
+		if (this->left_child) {
+			T_Tree_Node<key_t, value_t>* now = this->left_child;
+			while (now->right_child) {
+				now = now->right_child;
+			}
+			key_t key = now->records[now->size-1].get_key();
+			value_t value = now->records[now->size-1].get_value();
+			insert_at_node(key, value);
+			this->left_child = this->left_child->erase(key);
+		}
+		else if (this->right_child) {
+			T_Tree_Node<key_t, value_t>* now = this->right_child;
+			while (now->left_child) {
+				now = now->left_child;
+			}
+			key_t key = now->records[0].get_key();
+			value_t value = now->records[0].get_value();
+			insert_at_node(key, value);
+			this->right_child = this->right_child->erase(key);
+		}
+	}
+	else if (min_key > key) {
+		if (left_child) {
+			left_child = left_child->erase(key);
+		}
+	}
+	else if (max_key < key) {
+		if (right_child) {
+			right_child = right_child->erase(key);
+		}
+	}
+
+	if (left_child && left_child->size == 0) {
+		delete left_child;
+		left_child = NULL;
+	}
+	if (right_child && right_child->size == 0) {
+		delete right_child;
+		right_child = NULL;
+	}
+	return this;
+}
+
 
 template<class key_t, class value_t>
 void T_Tree_Node<key_t, value_t>::print_inorder() {
 	if (left_child) {
 		left_child->print_inorder();
 	}
+	cout << "[ ";
 	for (int i = 0; i < size; i++) {
 		std::cout << records[i].get_key() << " ";
 	}
+	cout << "] ";
 	if (right_child) {
 		right_child->print_inorder();
 	}
 }
+
+
 #endif

@@ -5,10 +5,9 @@ using namespace std;
 
 int main() {
 	T_Tree<int, string>tree;
+	string cmd;
 
-	while (true) {
-		string cmd;
-		cin >> cmd;
+	while (cin >> cmd) {
 		if (cmd == "insert") {
 			int key;
 			string val;
@@ -30,8 +29,13 @@ int main() {
 				cout << "No Data\n";
 			}
 		}
-
+		else if (cmd == "delete") {
+			int key;
+			cin >> key;
+			tree.erase(key);
+		}
+		else if (cmd == "quit") {
+			return 0;
+		}
 	}
-
-	return 0;
 }
