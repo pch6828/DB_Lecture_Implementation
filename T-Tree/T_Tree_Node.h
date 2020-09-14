@@ -3,6 +3,12 @@
 
 #include "Key_Value.h"
 #include <algorithm>
+
+//Class Definition for T-Tree Node
+//Fields: 
+//2 Child Pointers, Parent Pointer, key-value pointer pair
+//Methods:
+//Searching, Insertion, Deletion, Rotation, Inorder Printing(for debugging)
 template<class key_t, class value_t>
 class T_Tree_Node {
 private:
@@ -33,6 +39,12 @@ public:
 	void print_inorder();
 };
 
+//Single Key Search Operation
+//If there is corresponding key, return true and set dist to its value pointer
+//else, return false
+//
+//should be executed unique key environment
+//if there are duplicate keys, dist can be UB
 template<class key_t, class value_t>
 bool T_Tree_Node<key_t, value_t>::find(key_t key, value_t*& dist) {
 	if (min_key <= key && key <= max_key) {
@@ -56,6 +68,10 @@ bool T_Tree_Node<key_t, value_t>::find(key_t key, value_t*& dist) {
 	return false;
 }
 
+//Helper Function for Insertion
+//Add new key-value pointer pair at node, and sort it, recompute key range of node
+//
+//should be executed when node has an empty slot
 template<class key_t, class value_t>
 T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::insert_at_node(key_t key, value_t value) {
 	records[size++] = Key_Value<key_t, value_t>(key, value);
@@ -70,6 +86,11 @@ T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::insert_at_node(key_t k
 	return this;
 }
 
+//Single Key Insert Operation
+//Add new key-value pointer pair at node, and rebalance it
+//rebalancing is done by
+// - send minimum record to child
+// - re-construct tree structure (rotation)
 template<class key_t, class value_t>
 T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::insert(key_t key, value_t value) {
 	int lh = -1, rh = -1;
@@ -147,81 +168,8 @@ T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::insert(key_t key, valu
 	return result;
 }
 
-template<class key_t, class value_t>
-T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::single_left_rotation() {
-	T_Tree_Node<key_t, value_t>* k1, *k2;
-	int lh, rh;
-	k2 = this;
-	k1 = k2->left_child;
-	k1->parent = k2->parent;
-	k2->left_child = k1->right_child;
-	if (k2->left_child) {
-		k2->left_child->parent = k2;
-	}
-	k2->parent = k1;
-	k1->right_child = k2;
-	lh = rh = -1;
-	if (k2->left_child) {
-		lh = k2->left_child->height;
-	}	
-	if (k2->right_child) {
-		rh = k2->right_child->height;
-	}
-	k2->height = max(lh, rh) + 1;
-	lh = rh = -1;
-	if (k1->left_child) {
-		lh = k1->left_child->height;
-	}
-	if (k1->right_child) {
-		rh = k1->right_child->height;
-	}
-	k1->height = max(lh, rh) + 1;
-	return k1;
-}
-
-template<class key_t, class value_t>
-T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::single_right_rotation() {
-	T_Tree_Node<key_t, value_t>* k1, *k2;
-	int lh, rh;
-	k2 = this;
-	k1 = k2->right_child;
-	k1->parent = k2->parent;
-	k2->right_child = k1->left_child;
-	if (k2->right_child) {
-		k2->right_child->parent = k2;
-	}
-	k2->parent = k1;
-	k1->left_child = k2;
-	lh = rh = -1;
-	if (k2->left_child) {
-		lh = k2->left_child->height;
-	}
-	if (k2->right_child) {
-		rh = k2->right_child->height;
-	}
-	k2->height = max(lh, rh) + 1;
-	lh = rh = -1;
-	if (k1->left_child) {
-		lh = k1->left_child->height;
-	}
-	if (k1->right_child) {
-		rh = k1->right_child->height;
-	}
-	k1->height = max(lh, rh) + 1;
-	return k1;
-}
-
-template<class key_t, class value_t>
-T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::double_left_rotation() {
-	this->left_child = this->left_child->single_right_rotation();
-	return this->single_left_rotation();
-}
-
-template<class key_t, class value_t>
-T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::double_right_rotation() {
-	this->right_child = this->right_child->single_left_rotation();
-	return this->single_right_rotation();
-}
+//Helper Function for Deletion
+//Eliminate corresponding key-value pointer pair at node, and pack it, recompute key range of node
 template<class key_t, class value_t>
 T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::erase_at_node(key_t key) {
 	for (int i = 0; i < size; i++) {
@@ -241,6 +189,12 @@ T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::erase_at_node(key_t ke
 	return this;
 }
 
+//Single Key Delete Operation
+//Eliminate corresponding key-value pointer pair 
+//rebalancing is done by
+// - get maximum key from left child
+// - get minimum key from right child
+// - re-construct tree structure (rotation)
 template<class key_t, class value_t>
 T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::erase(key_t key) {
 	int lh = -1, rh = -1;
@@ -311,10 +265,101 @@ T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::erase(key_t key) {
 			result = result->single_right_rotation();
 		}
 	}
+	lh = rh = -1;
+	if (result->left_child) {
+		lh = result->left_child->height;
+	}
+	if (result->right_child) {
+		rh = result->right_child->height;
+	}
+	result->height = std::max(lh, rh) + 1;
+
 	return result;
 }
 
+//Rotation Type 1 : Left-Left
+template<class key_t, class value_t>
+T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::single_left_rotation() {
+	T_Tree_Node<key_t, value_t>* k1, * k2;
+	int lh, rh;
+	k2 = this;
+	k1 = k2->left_child;
+	k1->parent = k2->parent;
+	k2->left_child = k1->right_child;
+	if (k2->left_child) {
+		k2->left_child->parent = k2;
+	}
+	k2->parent = k1;
+	k1->right_child = k2;
+	lh = rh = -1;
+	if (k2->left_child) {
+		lh = k2->left_child->height;
+	}
+	if (k2->right_child) {
+		rh = k2->right_child->height;
+	}
+	k2->height = max(lh, rh) + 1;
+	lh = rh = -1;
+	if (k1->left_child) {
+		lh = k1->left_child->height;
+	}
+	if (k1->right_child) {
+		rh = k1->right_child->height;
+	}
+	k1->height = max(lh, rh) + 1;
+	return k1;
+}
 
+//Rotation Type 2 : Right-Right
+template<class key_t, class value_t>
+T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::single_right_rotation() {
+	T_Tree_Node<key_t, value_t>* k1, * k2;
+	int lh, rh;
+	k2 = this;
+	k1 = k2->right_child;
+	k1->parent = k2->parent;
+	k2->right_child = k1->left_child;
+	if (k2->right_child) {
+		k2->right_child->parent = k2;
+	}
+	k2->parent = k1;
+	k1->left_child = k2;
+	lh = rh = -1;
+	if (k2->left_child) {
+		lh = k2->left_child->height;
+	}
+	if (k2->right_child) {
+		rh = k2->right_child->height;
+	}
+	k2->height = max(lh, rh) + 1;
+	lh = rh = -1;
+	if (k1->left_child) {
+		lh = k1->left_child->height;
+	}
+	if (k1->right_child) {
+		rh = k1->right_child->height;
+	}
+	k1->height = max(lh, rh) + 1;
+	return k1;
+}
+
+//Rotation Type 3 : Left-Right
+template<class key_t, class value_t>
+T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::double_left_rotation() {
+	this->left_child = this->left_child->single_right_rotation();
+	return this->single_left_rotation();
+}
+
+//Rotation Type 4 : Right-Left
+template<class key_t, class value_t>
+T_Tree_Node<key_t, value_t>* T_Tree_Node<key_t, value_t>::double_right_rotation() {
+	this->right_child = this->right_child->single_left_rotation();
+	return this->single_right_rotation();
+}
+
+//For Debug Printing Operation
+//While traversing tree by inorder manner,
+//print all keys in each node
 template<class key_t, class value_t>
 void T_Tree_Node<key_t, value_t>::print_inorder() {
 	if (left_child) {
@@ -329,6 +374,4 @@ void T_Tree_Node<key_t, value_t>::print_inorder() {
 		right_child->print_inorder();
 	}
 }
-
-
 #endif

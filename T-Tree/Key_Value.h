@@ -4,9 +4,15 @@
 #include<iostream>
 using namespace std;
 
+//pre-definition for some special field
 #define NONE_KEY -1
 #define NONE_VALUE NULL
 
+//Class Definition for Key Value Pair
+//Fields: 
+//key, value pointer, bit for validation
+//Methods:
+//getter, setter for each field, custom operator
 template<class key_t, class value_t>
 class Key_Value {
 private:
@@ -33,6 +39,7 @@ public:
 	bool is_valid();
 };
 
+//Custom Operator for Assignment
 template<class key_t, class value_t>
 Key_Value<key_t, value_t>& Key_Value<key_t, value_t>::operator=(const Key_Value<key_t, value_t>& other) {
 	if (other.valid) {
@@ -47,7 +54,7 @@ Key_Value<key_t, value_t>& Key_Value<key_t, value_t>::operator=(const Key_Value<
 	return *this;
 }
 
-
+//Setter for value field
 template<class key_t, class value_t>
 void Key_Value<key_t, value_t>::set_value(value_t value) {
 	if (!this->value) {
@@ -57,24 +64,29 @@ void Key_Value<key_t, value_t>::set_value(value_t value) {
 	this->valid = true;
 }
 
+//Getter for key field
 template<class key_t, class value_t>
 key_t Key_Value<key_t, value_t>::get_key() {
 	return this->key;
 };
 
+//Getter for value field
+//return actual value
 template<class key_t, class value_t>
 value_t Key_Value<key_t, value_t>::get_value() {
 	return *this->value;
 }
 
+//Getter for value field
+//return its pointer
 template<class key_t, class value_t>
 value_t* Key_Value<key_t, value_t>::get_pointer() {
 	return this->value;
 }
 
+//Getter for validation bit field
 template<class key_t, class value_t>
 bool Key_Value<key_t, value_t>::is_valid() {
 	return this->valid;
 }
-
 #endif
