@@ -18,5 +18,24 @@ int main() {
 			list.print_list();
 			cout << "\n";
 		}
+		else if (cmd == "find") {
+			int key;
+			cin >> key;
+			string* val = list.find(key);
+			if (val) {
+				cout << *val << "\n";
+			}
+			else {
+				cout << "no data\n";
+			}
+		}
+		else if (cmd == "delete") {
+			int key;
+			cin >> key;
+			list.erase(key);
+		}
+		else if (cmd == "quit") {
+			return 0;
+		}
 	}
 }
