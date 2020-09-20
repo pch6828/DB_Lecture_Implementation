@@ -10,4 +10,5 @@ Some Simple Implementation after taking CMU DB Lecture(by Youtube)
 ### TODO
 - Write T-Tree WIKI
 - Write Skip List WIKI
+- implement Cuckoo Hash scheme
 - implement Trie
