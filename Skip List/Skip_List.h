@@ -5,6 +5,11 @@
 #include <random>
 #include "Skip_List_Node.h"
 
+//Class Definition for Skip List API
+//Fields: 
+//header node for Skip List, maximum level for Skip List, random device to create random level
+//Methods:
+//Search, Insertion, Deletion, Printing(for debugging)
 template<class key_t, class value_t>
 class Skip_List {
 private:
@@ -26,6 +31,9 @@ public:
 	void print_list();
 };
 
+//Single Key Search API
+//If there is corresponding key in the list, return its value pointer,
+//else return NULL
 template<class key_t, class value_t>
 value_t* Skip_List<key_t, value_t>::find(key_t key) {
 	value_t* result = NULL;
@@ -33,7 +41,10 @@ value_t* Skip_List<key_t, value_t>::find(key_t key) {
 	return result;
 }
 
-
+//Single Key Insert API
+//create random level for new node, and insert it
+//	
+//if there are corresponding key in the list, it does nothing
 template<class key_t, class value_t>
 void Skip_List<key_t, value_t>::insert(key_t key, value_t value) {
 	if (find(key)) {
@@ -43,11 +54,15 @@ void Skip_List<key_t, value_t>::insert(key_t key, value_t value) {
 	head->insert(level, key, value);
 }
 
+//Single Key Delete API	
+//if there are corresponding key in the list, delete its node
+//else, it does nothing
 template<class key_t, class value_t>
 void Skip_List<key_t, value_t>::erase(key_t key) {
 	head->erase(key);
 }
 
+//For Debug Printing Operation
 template<class key_t, class value_t>
 void Skip_List<key_t, value_t>::print_list() {
 	head->print_list();
