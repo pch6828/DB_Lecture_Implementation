@@ -19,7 +19,7 @@ private:
 	key_t key;
 	value_t* value;
 public:
-	Key_Value(key_t key, value_t value):valid(true), key(key) {
+	Key_Value(key_t key, value_t value = value_t()):valid(true), key(key) {
 		this->value = new value_t(value);
 	}
 	Key_Value() : valid(false), value(NULL) {}
