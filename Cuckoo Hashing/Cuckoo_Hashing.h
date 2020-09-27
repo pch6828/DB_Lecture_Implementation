@@ -7,9 +7,16 @@
 #include <iostream>
 
 typedef unsigned long long llsize_t;
+
+//pre-definition for rehash condition value
 constexpr auto MAX_ITERATION = 10;
 
-template<class key_t, class value_t, class hasher_t = hash<key_t>>
+//Class Definition for Key Value Pair
+//Fields: 
+//random device for hashing key, two hash table, size, hashing key, initial hashing function
+//Methods:
+//Hashing function, Search, Insertion, Deletion, Custom operator, Printing (for debugging)
+template<class key_t, class value_t, class hasher_t = std::hash<key_t>>
 class Cuckoo_Hashmap {
 private:
 	std::random_device rd;
@@ -18,13 +25,17 @@ private:
 	Key_Value<key_t, value_t>** hash_map[2];
 	hasher_t hasher;
 
+	//Setter for Random Hasing Key
+	//set hashing key for given table(0 or 1) to random positive odd number
 	void set_hash_key_z(int table) {
 		size_t key = rd();
 		key += !(key % 2);
 		hash_key_z[table] = key;
 	}
 
-	size_t get_idx(int table, key_t key) {
+	//Caculate Hashed Index
+	//Using multiplicative hashing function to calculate index
+	size_t get_idx(int table, key_t key) {	
 		llsize_t hashed_value = hasher(key);
 
 		hashed_value *= hash_key_z[table];
@@ -34,6 +45,11 @@ private:
 		return hashed_value;
 	}
 
+	//Helper Function for Insertion
+	//if there is empty slot for given key or there is already corresponding key, just place record
+	//else, pull out already existing record and place new record, then place picked record to other table
+	//
+	//after some iteration, if insertion process is not completed, rehash entire table.
 	void insert_or_assign(Key_Value<key_t, value_t>* k_v) {
 		key_t key;
 		int table = 0, iteration = 0;
@@ -44,6 +60,10 @@ private:
 
 			swap(k_v, hash_map[table][idx]);
 			if (!k_v) {
+				return;
+			}
+			else if (k_v->get_key() == hash_map[table][idx]->get_key()) {
+				delete k_v;
 				return;
 			}
 			else if (iteration == MAX_ITERATION) {
@@ -57,6 +77,11 @@ private:
 		}
 	}
 
+	//Rehashing Operation
+	//allocate new hash table that has twice the previous table size
+	//set new random hashing key for two new table
+	//hash all records in previous table into new table
+	//deallocate previous table
 	void rehash() {
 		size_t prev_size0 = size[0]++;
 		size_t prev_size1 = size[1]++;
@@ -118,6 +143,9 @@ public:
 		delete[] hash_map[1];
 	}
 
+	//Single Key Insertion API
+	//if there are already corresponding key, do nothing
+	//else, insert given record
 	void insert(key_t key, value_t value) {
 		Key_Value<key_t, value_t>* k_v0, * k_v1;
 
@@ -135,6 +163,9 @@ public:
 		insert_or_assign(k_v);
 	}
 
+	//Single Key Search API
+	//if there are corresponding key, return its value's reference.
+	//else, allocate new record with given key and default value, and return its value's reference
 	value_t& find(key_t key) {
 		Key_Value<key_t, value_t>* k_v0, * k_v1;
 
@@ -160,6 +191,8 @@ public:
 		}
 	}
 
+	//Custom Operator []
+	//same action with Cuckoo_Hashtable::find
 	value_t& operator[](key_t key) {
 		Key_Value<key_t, value_t>* k_v0, * k_v1;
 
@@ -185,6 +218,9 @@ public:
 		}
 	}
 
+	//Single Key Deletion
+	//if there is not corresponding key, do nothing
+	//else, delete that record and set its slot empty.
 	void erase(key_t key) {
 		Key_Value<key_t, value_t>* k_v0, * k_v1;
 
@@ -201,6 +237,7 @@ public:
 		}
 	}
 
+	//For Debug Printing Function
 	void print_table() {
 		size_t table_size;
 		std::cout << "table 0" << std::endl;
