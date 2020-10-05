@@ -11,4 +11,5 @@ Some Simple Implementation after taking CMU DB Lecture(by Youtube)
 - [Source Code](https://github.com/pch6828/DB_Lecture_Implementation/tree/master/Cuckoo%20Hashing)
 
 ### TODO
-- implement Trie
+- implement HAT-Trie
+<br>refer to [LINK](https://tessil.github.io/2017/06/22/hat-trie.html)
