@@ -13,3 +13,4 @@ Some Simple Implementation after taking CMU DB Lecture(by Youtube)
 ### TODO
 - implement HAT-Trie
 <br>refer to [LINK](https://tessil.github.io/2017/06/22/hat-trie.html)
+- implement Bloom Filter
